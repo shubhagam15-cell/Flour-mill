@@ -13,8 +13,11 @@ from kivy.uix.button import Button
 from kivy.uix.spinner import Spinner
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
+from kivy.core.text import LabelBase
 
 APP_NAME = "श्री लक्ष्मी पिठाची गिरणी"
+MARATHI_FONT = os.path.join(os.path.dirname(__file__), "NotoSansDevanagariUI-Regular.ttf")
+LabelBase.register(name="Marathi", fn_regular=MARATHI_FONT)
 
 def db_path():
     return os.path.join(App.get_running_app().user_data_dir, "flourmill.db")
@@ -54,10 +57,10 @@ class FlourMillApp(App):
 
     def heading(self, text):
         return Label(text=text, size_hint_y=None, height=dp(48),
-                     font_size="21sp", bold=True, color=(0.12, 0.30, 0.18, 1))
+                     font_size="21sp", bold=True, font_name="Marathi", color=(0.12, 0.30, 0.18, 1))
 
     def make_button(self, text, callback):
-        b = Button(text=text, size_hint_y=None, height=dp(48), font_size="16sp")
+        b = Button(text=text, size_hint_y=None, height=dp(48), font_size="16sp", font_name="Marathi")
         b.bind(on_release=callback)
         return b
 
@@ -66,7 +69,7 @@ class FlourMillApp(App):
         self.root_box.add_widget(self.heading(APP_NAME))
         self.root_box.add_widget(Label(
             text="ऑफलाइन बिलिंग • ग्राहक खाते • रोजचा हिशोब",
-            size_hint_y=None, height=dp(30), font_size="14sp"))
+            size_hint_y=None, height=dp(30), font_size="14sp", font_name="Marathi"))
         con = sqlite3.connect(db_path())
         cur = con.cursor()
         today = datetime.now().strftime("%Y-%m-%d")
@@ -79,13 +82,13 @@ class FlourMillApp(App):
             f"आजची बाकी: ₹{balance:.2f}"
         )
         self.root_box.add_widget(Label(text=summary, size_hint_y=None, height=dp(150),
-                                       font_size="17sp", halign="left", valign="middle"))
+                                       font_size="17sp", font_name="Marathi", halign="left", valign="middle"))
         self.root_box.add_widget(self.make_button("＋ नवीन बिल तयार करा", self.show_new_bill))
         self.root_box.add_widget(self.make_button("ग्राहकांचे खाते / जुनी बिले", self.show_ledger))
         self.root_box.add_widget(self.make_button("रिपोर्ट", self.show_reports))
         self.root_box.add_widget(Label(
             text="टीप: डेटा या मोबाईलमध्ये ऑफलाइन सेव्ह होतो. नियमित बॅकअप घ्या.",
-            size_hint_y=None, height=dp(45), font_size="12sp"))
+            size_hint_y=None, height=dp(45), font_size="12sp", font_name="Marathi"))
 
     def show_new_bill(self, *_):
         self.clear()
@@ -97,18 +100,18 @@ class FlourMillApp(App):
         self.name_in = self.add_field(form, "ग्राहकाचे नाव *")
         self.phone_in = self.add_field(form, "मोबाईल नंबर (ऐच्छिक)", input_filter="int")
         self.grain_in = Spinner(text="गहू", values=("गहू", "ज्वारी", "बाजरी"),
-                                size_hint_y=None, height=dp(46), font_size="16sp")
-        form.add_widget(Label(text="धान्याचा प्रकार", size_hint_y=None, height=dp(25)))
+                                size_hint_y=None, height=dp(46), font_size="16sp", font_name="Marathi")
+        form.add_widget(Label(text="धान्याचा प्रकार", size_hint_y=None, height=dp(25), font_name="Marathi"))
         form.add_widget(self.grain_in)
         self.weight_in = self.add_field(form, "वजन (KG)", input_filter="float")
         self.rate_in = self.add_field(form, "दर (₹ प्रति KG)", input_filter="float")
         self.paid_in = self.add_field(form, "आता भरलेली रक्कम (₹)", input_filter="float")
         self.mode_in = Spinner(text="Cash", values=("Cash", "UPI", "PhonePe", "उधारी"),
-                                size_hint_y=None, height=dp(46), font_size="16sp")
-        form.add_widget(Label(text="पेमेंट पद्धत", size_hint_y=None, height=dp(25)))
+                                size_hint_y=None, height=dp(46), font_size="16sp", font_name="Marathi")
+        form.add_widget(Label(text="पेमेंट पद्धत", size_hint_y=None, height=dp(25), font_name="Marathi"))
         form.add_widget(self.mode_in)
         self.total_label = Label(text="एकूण: ₹0.00 | बाकी: ₹0.00",
-                                 size_hint_y=None, height=dp(40), font_size="17sp", bold=True)
+                                 size_hint_y=None, height=dp(40), font_size="17sp", bold=True, font_name="Marathi")
         form.add_widget(self.total_label)
         for field in (self.weight_in, self.rate_in, self.paid_in):
             field.bind(text=self.update_total)
@@ -119,7 +122,7 @@ class FlourMillApp(App):
 
     def add_field(self, parent, hint, input_filter=None):
         t = TextInput(hint_text=hint, multiline=False, size_hint_y=None,
-                      height=dp(46), font_size="16sp", input_filter=input_filter)
+                      height=dp(46), font_size="16sp", font_name="Marathi", input_filter=input_filter)
         parent.add_widget(t)
         return t
 
@@ -171,7 +174,7 @@ class FlourMillApp(App):
         self.root_box.add_widget(self.heading("बिल सेव्ह झाले!"))
         self.root_box.add_widget(Label(
             text=f"बिल क्रमांक: {bill_id}\\nएकूण: ₹{total:.2f}\\nभरले: ₹{paid:.2f}\\nबाकी: ₹{balance:.2f}",
-            size_hint_y=None, height=dp(130), font_size="18sp"))
+            size_hint_y=None, height=dp(130), font_size="18sp", font_name="Marathi"))
         self.root_box.add_widget(self.make_button("WhatsApp मेसेज शेअर करा", self.share_whatsapp))
         self.root_box.add_widget(self.make_button("मुख्य स्क्रीन", self.show_home))
         self.root_box.add_widget(self.make_button("नवीन बिल", self.show_new_bill))
@@ -206,12 +209,12 @@ class FlourMillApp(App):
         box = GridLayout(cols=1, spacing=dp(6), size_hint_y=None, padding=dp(4))
         box.bind(minimum_height=box.setter("height"))
         if not rows:
-            box.add_widget(Label(text="अजून कोणतेही बिल नाही.", size_hint_y=None, height=dp(45)))
+            box.add_widget(Label(text="अजून कोणतेही बिल नाही.", size_hint_y=None, height=dp(45), font_name="Marathi"))
         for name, phone, count, total, paid, balance in rows:
             box.add_widget(Label(
                 text=f"{name}  |  बिले: {count}\\nमोबाईल: {phone or '-'}\\n"
                      f"एकूण: ₹{total:.2f}  भरले: ₹{paid:.2f}  बाकी: ₹{balance:.2f}",
-                size_hint_y=None, height=dp(95), font_size="14sp"))
+                size_hint_y=None, height=dp(95), font_size="14sp", font_name="Marathi"))
         scroll.add_widget(box)
         self.root_box.add_widget(scroll)
         self.root_box.add_widget(self.make_button("मुख्य स्क्रीन", self.show_home))
@@ -227,19 +230,19 @@ class FlourMillApp(App):
         box = GridLayout(cols=1, spacing=dp(6), size_hint_y=None, padding=dp(4))
         box.bind(minimum_height=box.setter("height"))
         if not rows:
-            box.add_widget(Label(text="रिपोर्टसाठी व्यवहार उपलब्ध नाहीत.", size_hint_y=None, height=dp(45)))
+            box.add_widget(Label(text="रिपोर्टसाठी व्यवहार उपलब्ध नाहीत.", size_hint_y=None, height=dp(45), font_name="Marathi"))
         for month, count, kg, total, paid, balance in rows:
             box.add_widget(Label(
                 text=f"महिना: {month}\\nबिले: {count} | दळण: {kg:.2f} KG\\n"
                      f"विक्री: ₹{total:.2f} | मिळाले: ₹{paid:.2f}\\nबाकी: ₹{balance:.2f}",
-                size_hint_y=None, height=dp(105), font_size="14sp"))
+                size_hint_y=None, height=dp(105), font_size="14sp", font_name="Marathi"))
         scroll.add_widget(box)
         self.root_box.add_widget(scroll)
         self.root_box.add_widget(self.make_button("मुख्य स्क्रीन", self.show_home))
 
     def show_message(self, message):
         from kivy.uix.popup import Popup
-        Popup(title="माहिती", content=Label(text=message), size_hint=(0.85, 0.35)).open()
+        Popup(title="माहिती", content=Label(text=message, font_name="Marathi"), size_hint=(0.85, 0.35)).open()
 
 if __name__ == "__main__":
     FlourMillApp().run()
